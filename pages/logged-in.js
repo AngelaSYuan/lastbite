@@ -1,11 +1,22 @@
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "../styles/Restaurant.module.css";
 
-
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Restaurant() {
+export default function LoggedIn() {
+  const router = useRouter();
+  const [restaurantName, setRestaurantName] = useState('');
+
+  useEffect(() => {
+    const { restaurant } = router.query;
+    if (restaurant) {
+      setRestaurantName(decodeURIComponent(restaurant));
+    }
+  }, [router.query]);
+
   return (
     <>
       <Head>
@@ -17,10 +28,10 @@ export default function Restaurant() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
           <h1 className={styles.restaurantMainHook}>
-           Your restaurant is logged in!
+            {restaurantName ? `You're logged in, ${restaurantName}!` : 'You are not logged in. Return to /restaurants'}
           </h1>
         </div>
-        </main>
+      </main>
     </>
   );
 }

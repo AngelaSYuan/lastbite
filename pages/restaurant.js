@@ -31,7 +31,7 @@ export default function Restaurant() {
       }
 
       // Redirect to the logged-in page
-      router.push('/logged-in');
+      router.push(`/logged-in?restaurant=${encodeURIComponent(restaurantName)}`);
     } catch (error) {
       setError(error.message); //I think this prints out the error lmao.
     }
