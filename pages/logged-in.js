@@ -3,17 +3,18 @@ import { useRouter } from 'next/router';
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "../styles/Restaurant.module.css";
-import { getFirestore, getDoc, doc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { getFirestore, getDoc, setDoc, doc } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function LoggedIn() {
+export default function LoggedIn({ initialFoodSubmissions }) {
   const router = useRouter();
   const [restaurantName, setRestaurantName] = useState('');
   const [foodName, setFoodName] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [foodSubmissions, setFoodSubmissions] = useState([]);
+  const [price, setPrice] = useState(''); // Add price state variable
+  const [foodSubmissions, setFoodSubmissions] = useState(initialFoodSubmissions || []);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -43,46 +44,41 @@ export default function LoggedIn() {
     const db = getFirestore();
     
     try {
-      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
-      const restaurantDocSnapshot = await getDoc(restaurantDocRef);
-      let foodSubmissions = [];
+        const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+        const restaurantDocSnapshot = await getDoc(restaurantDocRef);
+        let foodSubmissions = [];
   
-      if (restaurantDocSnapshot.exists()) {
-        const restaurantData = restaurantDocSnapshot.data();
-        foodSubmissions = restaurantData.foodSubmissions || [];
+        if (restaurantDocSnapshot.exists()) {
+            const restaurantData = restaurantDocSnapshot.data();
+            foodSubmissions = restaurantData.foodSubmissions || [];
         
-        // Find the index of the existing submission for the same food item
-        const existingSubmissionIndex = foodSubmissions.findIndex(submission => submission.foodName === foodName);
+            const existingSubmissionIndex = foodSubmissions.findIndex(submission => submission.foodName === foodName);
         
-        if (existingSubmissionIndex !== -1) {
-          // If the food item exists, update its quantity by adding the new quantity
-          foodSubmissions[existingSubmissionIndex].quantity = Number(foodSubmissions[existingSubmissionIndex].quantity) + Number(quantity);
-        } else {
-          // If the food item doesn't exist, add it to foodSubmissions
-          foodSubmissions.push({ foodName, quantity });
+            if (existingSubmissionIndex !== -1) {
+                foodSubmissions[existingSubmissionIndex].quantity += Number(quantity);
+                foodSubmissions[existingSubmissionIndex].price = Number(price); // Update the price
+            } else {
+                foodSubmissions.push({ foodName, quantity, price });
+            }
+  
+            await setDoc(restaurantDocRef, { foodSubmissions }, { merge: true });
+  
+            setFoodSubmissions(foodSubmissions);
         }
-  
-        // Update the foodSubmissions array in Firestore
-        await setDoc(restaurantDocRef, { foodSubmissions }, { merge: true });
-  
-        // Update the local state to trigger re-rendering
-        setFoodSubmissions(foodSubmissions);
-      }
     } catch (error) {
-      console.error('Error submitting food entry:', error);
-      setError(error.message);
+        console.error('Error submitting food entry:', error);
+        setError(error.message);
     }
-  };
+};
+
 
   const handleClearEntries = async () => {
     try {
       const db = getFirestore();
       const restaurantDocRef = doc(db, 'restaurants', restaurantName);
 
-      // Clear the foodSubmissions array in Firestore
       await setDoc(restaurantDocRef, { foodSubmissions: [] }, { merge: true });
 
-      // Update the local state to reflect the change
       setFoodSubmissions([]);
     } catch (error) {
       console.error('Error clearing food entries:', error);
@@ -121,6 +117,12 @@ export default function LoggedIn() {
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
             />
+            <input
+                type="number"
+                placeholder="Enter price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+            />
             <button type="submit">Submit</button>
           </form>
           <br />
@@ -129,7 +131,7 @@ export default function LoggedIn() {
             <h2>Food postings you made:</h2>
             <ul>
               {foodSubmissions.map((submission, index) => (
-                <li key={index}>{submission.foodName}: {submission.quantity}</li>
+                <li key={index}>{submission.foodName}: {submission.quantity} (Price: ${submission.price})</li>
               ))}
             </ul>
             <button onClick={handleClearEntries}>Clear All Entries</button>
@@ -138,4 +140,21 @@ export default function LoggedIn() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { restaurant } = context.query;
+  const db = getFirestore();
+  const restaurantDocRef = doc(db, 'restaurants', restaurant);
+  const restaurantDocSnapshot = await getDoc(restaurantDocRef);
+  let initialFoodSubmissions = [];
+  if (restaurantDocSnapshot.exists()) {
+    const data = restaurantDocSnapshot.data();
+    initialFoodSubmissions = data.foodSubmissions || [];
+  }
+  return {
+    props: {
+      initialFoodSubmissions
+    }
+  };
 }

@@ -63,11 +63,11 @@ export default function Home() {
               {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 ? (
                 <ul>
                   {selectedRestaurant.foodSubmissions.map((submission, index) => (
-                    <li key={index}>{submission.foodName}: {submission.quantity}</li>
+                    <li key={index}>{submission.foodName}: {submission.quantity} (Price: ${submission.price})</li>
                   ))}
                 </ul>
               ) : (
-                <p>This restaurant hasn't listed any food yet!</p>
+                <p>This restaurant hasn&apos;t listed any food yet!</p>
               )}
               <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
             </div>
