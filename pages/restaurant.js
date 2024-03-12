@@ -36,6 +36,7 @@ export default function Restaurant() {
       setError(error.message); //I think this prints out the error lmao.
     }
   };
+  
 
   return (
     <>

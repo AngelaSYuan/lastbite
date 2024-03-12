@@ -1,13 +1,15 @@
+// index.js
+
 import { useState, useEffect } from 'react';
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import styles from "../styles/Restaurant.module.css";
+import styles from "../styles/Home.module.css";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function HomePage() {
+export default function Home() {
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   
@@ -41,7 +43,10 @@ export default function HomePage() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
-          <h1 className={styles.restaurantMainHook}>Restaurants</h1>
+          <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper. </h1>
+          <br/>
+          <h1 className={styles.restLabel}>Supported Restaurants</h1>
+          <br />
           <div className={styles.restaurantGrid}>
             {restaurants.map((restaurant, index) => (
               <div key={index} className={styles.restaurantCard} onClick={() => handleRestaurantClick(restaurant)}>
@@ -52,16 +57,23 @@ export default function HomePage() {
           </div>
         </div>
         {selectedRestaurant && (
-          <div className={styles.restaurantPanel}>
-            <h2>{selectedRestaurant.name}</h2>
-            <ul>
-              {selectedRestaurant.foodSubmissions.map((submission, index) => (
-                <li key={index}>{submission.foodName}: {submission.quantity}</li>
-              ))}
-            </ul>
-            <button onClick={() => setSelectedRestaurant(null)}>Close</button>
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <h2>{selectedRestaurant.name}</h2>
+              {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 ? (
+                <ul>
+                  {selectedRestaurant.foodSubmissions.map((submission, index) => (
+                    <li key={index}>{submission.foodName}: {submission.quantity}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>This restaurant hasn't listed any food yet!</p>
+              )}
+              <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
+            </div>
           </div>
         )}
+
       </main>
     </>
   );

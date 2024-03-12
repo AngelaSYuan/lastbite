@@ -73,9 +73,22 @@ export default function LoggedIn() {
       setError(error.message);
     }
   };
-  
-  
-  
+
+  const handleClearEntries = async () => {
+    try {
+      const db = getFirestore();
+      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+
+      // Clear the foodSubmissions array in Firestore
+      await setDoc(restaurantDocRef, { foodSubmissions: [] }, { merge: true });
+
+      // Update the local state to reflect the change
+      setFoodSubmissions([]);
+    } catch (error) {
+      console.error('Error clearing food entries:', error);
+      setError(error.message);
+    }
+  };
 
   return (
     <>
@@ -119,6 +132,7 @@ export default function LoggedIn() {
                 <li key={index}>{submission.foodName}: {submission.quantity}</li>
               ))}
             </ul>
+            <button onClick={handleClearEntries}>Clear All Entries</button>
           </div>
         </div>
       </main>
