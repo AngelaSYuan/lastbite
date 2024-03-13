@@ -1,18 +1,20 @@
-// index.js
-
 import { useState, useEffect } from 'react';
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "../styles/Home.module.css";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
+import { useRouter } from 'next/router';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const router = useRouter();
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -33,6 +35,20 @@ export default function Home() {
     setSelectedRestaurant(restaurant);
   };
 
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleQuantityChange = (event) => {
+    setQuantity(event.target.value);
+  };
+
+  const handleCheckout = () => { //INCLUDE PRICE
+    const queryString = `?foodName=${selectedItem.foodName}&price=${selectedItem.price}&quantity=${quantity}&restaurantName=${selectedRestaurant.name}`;
+    router.push(`/checkout${queryString}`);
+  };
+  
+
   return (
     <>
       <Head>
@@ -43,7 +59,7 @@ export default function Home() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
-          <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper. </h1>
+          <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper 🔥 </h1>
           <br/>
           <h1 className={styles.restLabel}>Supported Restaurants</h1>
           <br />
@@ -63,7 +79,10 @@ export default function Home() {
               {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 ? (
                 <ul>
                   {selectedRestaurant.foodSubmissions.map((submission, index) => (
-                    <li key={index}>{submission.foodName}: {submission.quantity} (Price: ${submission.price})</li>
+                    <li key={index}>
+                      {submission.foodName}: {submission.quantity} (Price: ${submission.price})
+                      <button onClick={() => handleItemClick(submission)}>Select</button>
+                    </li>
                   ))}
                 </ul>
               ) : (
@@ -74,6 +93,20 @@ export default function Home() {
           </div>
         )}
 
+        {selectedItem && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <h2>{selectedItem.foodName}</h2>
+              <p>Price: ${selectedItem.price}</p>
+              <label>
+                Quantity (out of the {selectedItem.quantity} available): <br/>
+                <input type="number" value={quantity} onChange={handleQuantityChange} />
+              </label>
+              <button onClick={handleCheckout}>Checkout</button>
+              <button onClick={() => setSelectedItem(null)} className={styles.closeButton}>Back</button>
+            </div>
+          </div>
+        )}
       </main>
     </>
   );
