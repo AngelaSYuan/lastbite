@@ -13,6 +13,11 @@
   align-items: center;
 }
 
+.minor {
+  font-size: 1.4rem;
+  text-align: center;
+  align-items: center;
+}
 .restLabel {
   font-size: 2rem;
   text-align: left;

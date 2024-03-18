@@ -80,30 +80,35 @@ export default function Home() {
       setQuantityLarge(0);
     }
   };
-  // const handleRegularPackageClick = () => {
-  //   // Handle regular package click action STRIPE
-  //   fetchPrices()
-  // };
-
-  // const handleLargePackageClick = () => {
-  //   // Handle large package click action STRIPE
-  // };
-  const handlePackageClick = async (packageType) => {
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ packageType }),
-      });
-      const data = await response.json();
-      // Redirect to Stripe Checkout
-      router.push(`https://checkout.stripe.com/pay/${data.id}`);
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-    }
+  const handleRegularPackageClick = () => {
+    sessionStorage.setItem('packageType', 'regular');
+    sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
+    // Handle regular package click action STRIPE
+    router.push(`https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM`);
   };
+
+  const handleLargePackageClick = () => {
+    sessionStorage.setItem('packageType', 'large');
+    sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
+    // Handle large package click action STRIPE
+    router.push(`https://buy.stripe.com/test_8wM8wCgtz6gE06s001`);
+  };
+  // const handlePackageClick = async (packageType) => {
+  //   try {
+  //     const response = await fetch('/api/create-checkout-session', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ packageType }),
+  //     });
+  //     const data = await response.json();
+  //     // Redirect to Stripe Checkout
+  //     router.push(`https://checkout.stripe.com/pay/${data.id}`);
+  //   } catch (error) {
+  //     console.error('Error creating checkout session:', error);
+  //   }
+  // };
 
 
   // const handleItemClick = (item) => {
@@ -133,6 +138,7 @@ export default function Home() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
           <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper 🔥 </h1>
+          <h3 className={styles.minor}>How it works: select a restaurant, choose mystery package, pay, pick up! </h3>
           <br/>
           <h1 className={styles.restLabel}>Supported Restaurants</h1>
           <br />
@@ -151,11 +157,11 @@ export default function Home() {
               <h2>{selectedRestaurant.name}</h2>
               {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
                 <div>
-                 <button onClick={() => handlePackageClick('regular')}>Regular Package ({quantityRegular} left)
+                 <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)
                  {/* <br/>
                  selectedRestaurant.packages */}
                  </button>
-                 <button onClick={() => handlePackageClick('large')}>Large Package ({quantityLarge} left)
+                 <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)
                  </button>
                  {/* <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button> */}
                  </div>
