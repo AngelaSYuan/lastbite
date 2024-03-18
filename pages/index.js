@@ -5,6 +5,7 @@ import styles from "../styles/Home.module.css";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
 import { useRouter } from 'next/router';
+import axios from "axios"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,6 +15,21 @@ export default function Home() {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
+
+  const [quantityRegular, setQuantityRegular] = useState(0);
+  const [quantityLarge, setQuantityLarge] = useState(0);
+
+  const [prices, setPrices] = useState([]);
+
+  // useEffect(() => {
+  //   fetchPrices()
+  // },[])
+
+  const fetchPrices = async () => {
+    const { data } = await axios.get('/api/getproducts');
+    setPrices(data)
+    console.log(data)
+  }
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -31,22 +47,57 @@ export default function Home() {
     fetchRestaurants();
   }, []);
 
-  const handleRestaurantClick = (restaurant) => {
+  // const handleRestaurantClick = (restaurant) => {
+  //   setSelectedRestaurant(restaurant);
+  // };
+
+  const handleRestaurantClick = async (restaurant) => {
     setSelectedRestaurant(restaurant);
+    if (restaurant.packages) {
+      const regularPackage = restaurant.packages.find(pkg => pkg.packageType === 'regular' || 'Regular');
+      const largePackage = restaurant.packages.find(pkg => pkg.packageType === 'large' || 'Large');
+      if (regularPackage) {
+        setQuantityRegular(regularPackage.packageQuantity);
+      } else {
+        setQuantityRegular(0);
+      }
+      if (largePackage) {
+        setQuantityLarge(largePackage.packageQuantity);
+      } else {
+        setQuantityLarge(0);
+      }
+    } else {
+      setQuantityRegular(0);
+      setQuantityLarge(0);
+    }
+  };
+  const handleRegularPackageClick = () => {
+    // Handle regular package click action STRIPE
+    fetchPrices()
   };
 
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
+  const handleLargePackageClick = () => {
+    // Handle large package click action STRIPE
   };
+
+
+  // const handleItemClick = (item) => {
+  //   setSelectedItem(item);
+  // };
 
   const handleQuantityChange = (event) => {
     setQuantity(event.target.value);
   };
 
-  const handleCheckout = () => { //INCLUDE PRICE
-    const queryString = `?foodName=${selectedItem.foodName}&price=${selectedItem.price}&quantity=${quantity}&restaurantName=${selectedRestaurant.name}`;
-    router.push(`/checkout${queryString}`);
-  };
+  // const handleCheckout = () => { //INCLUDE PRICE
+  //   const queryString = `?foodName=${selectedItem.foodName}&price=${selectedItem.price}&quantity=${quantity}&restaurantName=${selectedRestaurant.name}`;
+  //   router.push(`/checkout${queryString}`);
+  // };
+
+  const handlePackageClick = (event) => {
+    //ADD THE STRIPE HANDLING HERE
+  }
+
   
 
   return (
@@ -76,24 +127,26 @@ export default function Home() {
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
               <h2>{selectedRestaurant.name}</h2>
-              {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 ? (
-                <ul>
-                  {selectedRestaurant.foodSubmissions.map((submission, index) => (
-                    <li key={index}>
-                      {submission.foodName}: {submission.quantity} (Price: ${submission.price})
-                      <button onClick={() => handleItemClick(submission)}>Select</button>
-                    </li>
-                  ))}
-                </ul>
+              {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
+                <div>
+                 <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)
+                 {/* <br/>
+                 selectedRestaurant.packages */}
+                 </button>
+                 <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)
+                 </button>
+                 {/* <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button> */}
+                 </div>
               ) : (
-                <p>This restaurant hasn&apos;t listed any food yet!</p>
+                <p>This restaurant hasn&apos;t listed any packages yet!</p>
               )}
               <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
             </div>
           </div>
         )}
 
-        {selectedItem && (
+
+        {/* {selectedItem && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
               <h2>{selectedItem.foodName}</h2>
@@ -106,7 +159,7 @@ export default function Home() {
               <button onClick={() => setSelectedItem(null)} className={styles.closeButton}>Back</button>
             </div>
           </div>
-        )}
+        )} */}
       </main>
     </>
   );

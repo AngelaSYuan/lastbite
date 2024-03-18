@@ -11,7 +11,7 @@ export default async function handler(req, res) {
           {
             // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
             price: req.body, //THIS SHOULD BE THE PRICE "PASSED IN" from checkout.js
-            quantity: , //THE PRICE SHOULD ALR BE CALCULATED!!!
+            quantity: 1, //THE PRICE SHOULD ALR BE CALCULATED!!!
           },
         ],
         mode: 'payment',
