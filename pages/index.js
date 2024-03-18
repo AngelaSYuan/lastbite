@@ -25,11 +25,20 @@ export default function Home() {
   //   fetchPrices()
   // },[])
 
-  const fetchPrices = async () => {
-    const { data } = await axios.get('/api/getproducts');
-    setPrices(data)
-    console.log(data)
-  }
+  // const fetchPrices = async () => {
+  //   try {
+  //     const response = await fetch('/api/getproducts');
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch prices');
+  //     }
+  //     const data = await response.json();
+  //     setPrices(data);
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.error('Error fetching prices:', error);
+  //   }
+  // };
+  
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -71,13 +80,29 @@ export default function Home() {
       setQuantityLarge(0);
     }
   };
-  const handleRegularPackageClick = () => {
-    // Handle regular package click action STRIPE
-    fetchPrices()
-  };
+  // const handleRegularPackageClick = () => {
+  //   // Handle regular package click action STRIPE
+  //   fetchPrices()
+  // };
 
-  const handleLargePackageClick = () => {
-    // Handle large package click action STRIPE
+  // const handleLargePackageClick = () => {
+  //   // Handle large package click action STRIPE
+  // };
+  const handlePackageClick = async (packageType) => {
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ packageType }),
+      });
+      const data = await response.json();
+      // Redirect to Stripe Checkout
+      router.push(`https://checkout.stripe.com/pay/${data.id}`);
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+    }
   };
 
 
@@ -94,9 +119,6 @@ export default function Home() {
   //   router.push(`/checkout${queryString}`);
   // };
 
-  const handlePackageClick = (event) => {
-    //ADD THE STRIPE HANDLING HERE
-  }
 
   
 
@@ -129,11 +151,11 @@ export default function Home() {
               <h2>{selectedRestaurant.name}</h2>
               {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
                 <div>
-                 <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)
+                 <button onClick={() => handlePackageClick('regular')}>Regular Package ({quantityRegular} left)
                  {/* <br/>
                  selectedRestaurant.packages */}
                  </button>
-                 <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)
+                 <button onClick={() => handlePackageClick('large')}>Large Package ({quantityLarge} left)
                  </button>
                  {/* <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button> */}
                  </div>
