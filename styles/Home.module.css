@@ -48,7 +48,7 @@
 }
 
 .restaurantCard {
-  background-color: darkgoldenrod;
+  background-color: peachpuff;
   border: 1px solid lightgoldenrodyellow;
   border-radius: 10px;
   padding: 20px;
@@ -93,7 +93,7 @@
 }
 
 .modalContent {
-  background-color: darkgoldenrod;
+  background-color: peachpuff;
   padding: 100px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);

@@ -1,3 +1,7 @@
+body {
+  background-color: #ecedfeff; /* Very light gray */
+}
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
