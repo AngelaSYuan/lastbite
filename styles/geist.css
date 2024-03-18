@@ -1,0 +1,12 @@
+/* geist.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Apply Geist UI font to form buttons */
+button, input[type="button"], input[type="submit"], input[type="reset"] {
+  font-family: 'Inter', sans-serif;
+}
