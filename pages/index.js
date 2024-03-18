@@ -82,14 +82,14 @@ export default function Home() {
     }
   };
   const handleRegularPackageClick = () => {
-    sessionStorage.setItem('packageType', 'regular');
+    sessionStorage.setItem('packageType', 'Regular'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle regular package click action STRIPE
     router.push(`https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM`);
   };
 
   const handleLargePackageClick = () => {
-    sessionStorage.setItem('packageType', 'large');
+    sessionStorage.setItem('packageType', 'Large'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle large package click action STRIPE
     router.push(`https://buy.stripe.com/test_8wM8wCgtz6gE06s001`);

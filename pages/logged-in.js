@@ -157,15 +157,22 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
     );
   };
 
-  const handleUpdateQuantity = async (packageType) => {
+  const handleUpdateQuantity = async (packageType, change) => {
     const db = getFirestore();
     try {
       const restaurantDocRef = doc(db, 'restaurants', restaurantName);
-      await setDoc(restaurantDocRef, { packages }, { merge: true });
+      const updatedPackages = packages.map(pkg =>
+        pkg.packageType === packageType
+          ? { ...pkg, packageQuantity: Math.max(0, pkg.packageQuantity + change) }
+          : pkg
+      );
+      await setDoc(restaurantDocRef, { packages: updatedPackages }, { merge: true });
+      setPackages(updatedPackages);
     } catch (error) {
       console.error('Error updating quantity:', error);
     }
   };
+  
 
   const handleClearPackages = async () => {
     try {
@@ -250,17 +257,15 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
           <div>
             <h2>Package postings you made:</h2>
             <ul>
-              {packages.map((thePackage, index) => (
+            {packages.map((thePackage, index) => (
                 <li key={index}>
                   {thePackage.packageType} package (${thePackage.packagePrice}):
-                  <input
-                    type="number"
-                    value={thePackage.packageQuantity}
-                    onChange={(e) => handleQuantityChange(e, thePackage.packageType)}
-                  />
-                  <button onClick={() => handleUpdateQuantity(thePackage.packageType)}>Update Quantity</button>
+                    <button onClick={() => handleUpdateQuantity(thePackage.packageType, -1)}> - </button>
+                    {thePackage.packageQuantity}
+                    <button onClick={() => handleUpdateQuantity(thePackage.packageType, 1)}> + </button>
                 </li>
               ))}
+
             </ul>
             <button onClick={handleClearPackages}>Clear All Packages</button>
           </div>
@@ -300,43 +305,46 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
           <br />
           
           {error && <p>{error}</p>}
-          <div>
-            <h2 className={styles.subheading}>Food postings you made:</h2>
-            <ul>
-              {foodSubmissions.map((submission, index) => (
-                <li key={index}>{submission.foodName}: {submission.quantity} (Price: ${submission.price})</li>
-              ))}
-            </ul>
-            <button onClick={handleClearEntries}>Clear All Entries</button>
-          </div>
+    
+          <div className={styles.ordersContainer}>
+              <h2 className={styles.ordersSubheading}>Your Recent Orders</h2>
+              <div className={styles.tableContainer}>
+                <table className={styles.orderTable}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Package Type</th>
+                      <th>Total Paid</th>
+                      <th>Approximate Order Time</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.length > 0 ? (
+                      orders.slice().reverse().map((order, index) => ( // Reversing the array here
+                        <tr key={index}>
+                          <td className={styles.orderTableCell}>{order.name}</td>
+                          <td className={styles.orderTableCell}>{order.email}</td>
+                          <td className={styles.orderTableCell}>{order.packageType}</td>
+                          <td className={styles.orderTableCell}>${order.price}</td>
+                          <td className={styles.orderTableCell}>{order.time}</td>
+                          <td className={styles.orderTableCell}>{order.dietaryRestrictions}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className={styles.orderTableCell}>No orders yet!</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-          <br />
-          {/* Display recent orders */}
-          <div>
-            <h2 className={styles.ordersSubheading}>Your Recent Orders</h2>
-            <ul>
-              {orders.length > 0 ? (
-                orders.map((order, index) => (
-                  <li key={index}>
-                    Name: {order.name}, Email: {order.email}, Package Type: {order.setPackageType}, Quantity: {order.quantity}, Total paid: ${order.price}, Approximate Time Paid: {order.time}, Notes: {order.dietaryRestrictions}
-                    {/* <label htmlFor={`fulfillment_${order.orderId}`}>
-                        Fulfilled order?
-                        <input
-                          type="checkbox"
-                          id={`fulfillment_${order.orderId}`}
-                          onChange={() => handleFulfillmentCheck(order.orderId)}
-                          checked={fulfilledOrders[order.orderId]}
-                        />
 
-                     
-                    </label> */}
-                  </li>
-                ))
-              ) : (
-                <li>No orders yet!</li>
-              )}
-            </ul>
-          </div>
+
+
         </div>
       </main>
     </>

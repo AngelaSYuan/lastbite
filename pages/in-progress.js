@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { getFirestore, collection, getDoc, setDoc, query, where, doc} from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, setDoc,getDoc } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
 import { Timestamp } from 'firebase/firestore'; // Import Timestamp from Firestore
 
@@ -10,15 +10,15 @@ export default function InProgress() {
   const [email, setEmail] = useState('');
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
-  const [dietaryRestrictions, setDietaryRestrictions] = useState(''); // New state variable for dietary restrictions
-  const [orders, setOrders] = useState([]);
+  const [dietaryRestrictions, setDietaryRestrictions] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     let restaurantName = sessionStorage.getItem('selectedRestaurant');
     restaurantName = restaurantName.replace(/^"(.*)"$/, '$1');
     const packageType = sessionStorage.getItem('packageType');
-    
+    console.log(packageType)
+
     const formatFirestoreTimestamp = (firestoreTimestamp) => {
       const date = new Date(firestoreTimestamp.seconds * 1000);
       const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -40,21 +40,49 @@ export default function InProgress() {
       const restaurantDocRef = doc(db, 'restaurants', restaurantName);
       const restaurantDocSnapshot = await getDoc(restaurantDocRef);
       let orders = [];
-
+  
       if (restaurantDocSnapshot.exists()) {
         const restaurantData = restaurantDocSnapshot.data();
         orders = restaurantData.orders || [];
-        orders.push({ name, email, quantity, price, packageType, time, dietaryRestrictions }); // Include dietaryRestrictions in the order data
-      
+        orders.push({ name, email, quantity, price, packageType, time, dietaryRestrictions });
+  
+        // Update the orders in the Firestore
         await setDoc(restaurantDocRef, { orders }, { merge: true });
-        setOrders(orders);
-
+  
+        // Fetch the current package data
+        const packageDocRef = doc(db, 'packages', packageType);
+        const packageDocSnapshot = await getDoc(packageDocRef);
+        
+        if (restaurantDocSnapshot.exists()) {
+          const restaurantData = restaurantDocSnapshot.data();
+          const packages = restaurantData.packages || [];
+      
+          // Search for the package type within the restaurant's packages array
+          const packageIndex = packages.findIndex(pkg => pkg.packageType === packageType);
+          if (packageIndex !== -1) {
+            const packageData = packages[packageIndex];
+            //const packageData = packageDocSnapshot.data();
+            const currentQuantity = packageData.packageQuantity || 0;
+            const newQuantity = Math.max(0, currentQuantity - Number(quantity));
+          //  const newQuantity = currentQuantity - Number(quantity);
+      
+            // Update the package quantity in the restaurant's packages array
+            packages[packageIndex].packageQuantity = newQuantity;
+            await setDoc(restaurantDocRef, { packages }, { merge: true });
+            router.push('/success'); //ADDED
+          } else {
+            console.error(`No package found with the type ${packageType}`);
+          }
+        } else {
+          console.error(`No package found with the type ${packageType}`);
+        }
+  
         setName('');
         setEmail('');
         setQuantity('');
         setPrice('');
-        setDietaryRestrictions(''); // Reset dietary restrictions field
-
+        setDietaryRestrictions('');
+  
         router.push('/success');
       } else {
         console.error(`No restaurant found with the name ${restaurantName}`);
@@ -66,7 +94,7 @@ export default function InProgress() {
 
   return (
     <div>
-      <h1>Order Details</h1>
+      <h1>Verify a few more things, so we can get your order right... </h1>
       <form onSubmit={handleSubmit}>
         <label>
           Name:
@@ -93,7 +121,7 @@ export default function InProgress() {
           <input type="text" value={dietaryRestrictions} onChange={(e) => setDietaryRestrictions(e.target.value)} />
         </label>
         <br />
-        <button type="submit">Confirm Order</button>
+        <button type="submit">Confirm Order!</button>
       </form>
     </div>
   );

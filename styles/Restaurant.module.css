@@ -49,8 +49,26 @@
     border: 1px solid rgba(172, 175, 176, 0.3);
     border-radius: 12px;
     text-align: center;
+    align-items: center;
     font-size: 1.6rem;
+    margin-bottom: 1rem;;
   }
+
+  .ordersContainer {
+    text-align: center;
+  }
+  
+  .tableContainer {
+    display: inline-block;
+  }
+  
+
+  .orderTableCell {
+    align-items: center;
+    text-align: center;
+    padding: 8px; /* Adjust the padding to increase or decrease the gap between columns */
+  }
+  
 
   .addFoodDesc {
     position: relative;
