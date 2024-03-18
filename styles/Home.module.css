@@ -18,11 +18,25 @@
   text-align: center;
   align-items: center;
 }
+
+.blurb {
+    position: relative;
+    margin: 0;
+    padding: 1rem;
+    background-color: rgba(238, 240, 241, 0.5);
+    border: 1px solid rgba(172, 175, 176, 0.3);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.2rem;
+  }
+
 .restLabel {
   font-size: 2rem;
   text-align: left;
   align-items: center;
 }
+
+
 
 
 

@@ -29,11 +29,11 @@ export default function Home() {
         <div className={styles.description}>
         <h1>Thanks, we received your payment! </h1>
         <h2>A payment to Stripe will appear on your statement.</h2>
-        
+
         <br/>
         <br/>
 
-        <h1>Please pick up your order at {selectedRestaurant} at your soonest convenience!</h1>
+        <h1>Please pick up your order at {selectedRestaurant} at your soonest convenience 😋 </h1>
 
         </div>
       </main>

@@ -313,7 +313,7 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
               {orders.length > 0 ? (
                 orders.map((order, index) => (
                   <li key={index}>
-                    Name: {order.name}, Email: {order.email}, Package Type: {}Quantity: {order.quantity}, Total paid: ${order.price}, Approximate time paid: {order.time}
+                    Name: {order.name}, Email: {order.email}, Package Type: {order.setPackageType}, Quantity: {order.quantity}, Total paid: ${order.price}, Approximate Time Paid: {order.time}, Notes: {order.dietaryRestrictions}
                     {/* <label htmlFor={`fulfillment_${order.orderId}`}>
                         Fulfilled order?
                         <input

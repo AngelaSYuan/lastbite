@@ -4,28 +4,23 @@ import { getFirestore, collection, getDoc, setDoc, query, where, doc} from 'fire
 import firebase from '../firebase'; // Import your Firebase configuration
 import { Timestamp } from 'firebase/firestore'; // Import Timestamp from Firestore
 
-
 export default function InProgress() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
-  const [orders, setOrders] = useState([])
+  const [dietaryRestrictions, setDietaryRestrictions] = useState(''); // New state variable for dietary restrictions
+  const [orders, setOrders] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Get restaurant name from the session storage
     let restaurantName = sessionStorage.getItem('selectedRestaurant');
-    restaurantName = restaurantName.replace(/^"(.*)"$/, '$1'); // Remove surrounding quotes
+    restaurantName = restaurantName.replace(/^"(.*)"$/, '$1');
     const packageType = sessionStorage.getItem('packageType');
-    console.log(restaurantName);
-    console.log(packageType);
-
-
+    
     const formatFirestoreTimestamp = (firestoreTimestamp) => {
-      const date = new Date(firestoreTimestamp.seconds * 1000); // Convert seconds to milliseconds
+      const date = new Date(firestoreTimestamp.seconds * 1000);
       const formattedDate = new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: 'short',
@@ -41,12 +36,7 @@ export default function InProgress() {
     let time = formatFirestoreTimestamp(Timestamp.now());
 
     try {
-      const db = getFirestore(); // Initialize Firestore with your Firebase instance
-
-      // Query the restaurants collection for the restaurant with the matching name
-      const restaurantQuery = query(collection(db, 'restaurants'), where('name', '==', restaurantName));
-      //const restaurantSnapshot = await getDocs(restaurantQuery);
-
+      const db = getFirestore();
       const restaurantDocRef = doc(db, 'restaurants', restaurantName);
       const restaurantDocSnapshot = await getDoc(restaurantDocRef);
       let orders = [];
@@ -54,31 +44,16 @@ export default function InProgress() {
       if (restaurantDocSnapshot.exists()) {
         const restaurantData = restaurantDocSnapshot.data();
         orders = restaurantData.orders || [];
-        orders.push({ name, email, quantity, price, packageType, time });
+        orders.push({ name, email, quantity, price, packageType, time, dietaryRestrictions }); // Include dietaryRestrictions in the order data
       
         await setDoc(restaurantDocRef, { orders }, { merge: true });
-
         setOrders(orders);
 
-
-        // const orderData = {
-        //   name,
-        //   email,
-        //   quantity: parseInt(quantity),
-        //   price: parseFloat(price),
-        //   packageType: packageType,
-        // };
-
-        // Use orderData along with existing orders data when updating the document
-        // await setDoc(restaurantRef, {
-        //   orders: firebase.firestore.FieldValue.arrayUnion(orderData)
-        // }, { merge: true });
-
-        // Reset form fields after successful submission
         setName('');
         setEmail('');
         setQuantity('');
         setPrice('');
+        setDietaryRestrictions(''); // Reset dietary restrictions field
 
         router.push('/success');
       } else {
@@ -104,13 +79,18 @@ export default function InProgress() {
         </label>
         <br />
         <label>
-          Quantity:
+          Quantity ordered:
           <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
         </label>
         <br />
         <label>
-          Price:
+          Final price paid: 
           <input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} required />
+        </label>
+        <br />
+        <label>
+          Dietary Restrictions/Notes: {/* New input field for dietary restrictions */}
+          <input type="text" value={dietaryRestrictions} onChange={(e) => setDietaryRestrictions(e.target.value)} />
         </label>
         <br />
         <button type="submit">Confirm Order</button>
