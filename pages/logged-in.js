@@ -5,7 +5,8 @@ import styles from "../styles/Restaurant.module.css";
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
 import { useRouter } from 'next/router';
-import axios from "axios"
+import { collection } from 'firebase/firestore';
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,11 +48,24 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
   const fetchFoodSubmissions = async () => {
     try {
       const db = getFirestore();
-      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
-      const restaurantDocSnapshot = await getDoc(restaurantDocRef);
-      if (restaurantDocSnapshot.exists()) {
-        const data = restaurantDocSnapshot.data();
-        setFoodSubmissions(data.foodSubmissions || []);
+      let foodSubmissionsCollectionRef;
+  
+      // Check if restaurantName is present
+      if (restaurantName) {
+        // Construct collection reference with restaurantName
+        foodSubmissionsCollectionRef = collection(db, 'restaurants', restaurantName, 'foodSubmissions');
+      } else {
+        console.log("Restaurant name is not available.");
+        return; // Exit the function if restaurantName is not available
+      }
+  
+      const foodSubmissionsSnapshot = await getDocs(foodSubmissionsCollectionRef);
+      if (!foodSubmissionsSnapshot.empty) {
+        const foodSubmissionsData = foodSubmissionsSnapshot.docs.map(doc => doc.data());
+        setFoodSubmissions(foodSubmissionsData);
+      } else {
+        console.log("No food submissions yet!"); // Display message indicating no food submissions yet
+        setFoodSubmissions([]);
       }
     } catch (error) {
       console.error('Error fetching food submissions:', error);
@@ -80,7 +94,7 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
           foodSubmissions.push({ foodName, quantity, price });
         }
   
-        await setDoc(restaurantDocRef, { foodSubmissions }, { merge: true });
+        await addDoc(restaurantDocRef, { foodSubmissions }, { merge: true }); //CHANGED SETDOC TO ADDDOC
   
         setFoodSubmissions(foodSubmissions);
       }
@@ -109,7 +123,7 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
     const db = getFirestore();
 
     try {
-      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+      const restaurantDocRef = collection(db, 'restaurants', restaurantName);
       const restaurantDocSnapshot = await getDoc(restaurantDocRef);
       let packages = [];
 
@@ -135,18 +149,30 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
   const fetchPackages = async () => {
     try {
       const db = getFirestore();
-      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
-      const restaurantDocSnapshot = await getDoc(restaurantDocRef);
-      if (restaurantDocSnapshot.exists()) {
-        const data = restaurantDocSnapshot.data();
-        setPackages(data.packages || []);
+      let packagesCollectionRef;
+  
+      // Check if restaurantName is present
+      if (restaurantName) {
+        // Construct collection reference with restaurantName
+        packagesCollectionRef = collection(db, 'restaurants', restaurantName, 'packages');
       } else {
-        setPackages([]); // Set packages to an empty array if no data is found
+        console.log("Restaurant name is not available.");
+        return; // Exit the function if restaurantName is not available
+      }
+  
+      const packagesSnapshot = await getDocs(packagesCollectionRef);
+      if (!packagesSnapshot.empty) {
+        const packagesData = packagesSnapshot.docs.map(doc => doc.data());
+        setPackages(packagesData);
+      } else {
+        console.log("No packages yet!"); // Display message indicating no packages yet
+        setPackages([]);
       }
     } catch (error) {
       console.error('Error fetching packages submissions:', error);
     }
   };
+  
 
   const handleQuantityChange = async (event, packageType) => {
     const { value } = event.target;
@@ -160,7 +186,7 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
   const handleUpdateQuantity = async (packageType) => {
     const db = getFirestore();
     try {
-      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+      const restaurantDocRef = collection(db, 'restaurants', restaurantName);
       await setDoc(restaurantDocRef, { packages }, { merge: true });
     } catch (error) {
       console.error('Error updating quantity:', error);
@@ -183,15 +209,33 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
 
   const fetchOrders = async () => {
     try {
-      const db = getFirestore();
-      const ordersCollectionRef = collection(db, 'restaurants', restaurantName, 'orders');
-      const ordersSnapshot = await getDocs(ordersCollectionRef);
-      const ordersData = ordersSnapshot.docs.map(doc => doc.data());
-      setOrders(ordersData);
+        const db = getFirestore();
+        let ordersCollectionRef;
+
+        // Check if restaurantName is present
+        if (restaurantName) {
+            // Construct collection reference with restaurantName
+            ordersCollectionRef = collection(db, 'restaurants', restaurantName, 'orders');
+        } else {
+            console.log("Restaurant name is not available.");
+            return; // Exit the function if restaurantName is not available
+        }
+
+        const ordersSnapshot = await getDocs(ordersCollectionRef);
+        
+        if (ordersSnapshot.empty) {
+            console.log("No orders yet!"); // Display message indicating no orders yet
+            setOrders([]); // Set orders state to an empty array
+        } else {
+            const ordersData = ordersSnapshot.docs.map(doc => doc.data());
+            setOrders(ordersData);
+        }
     } catch (error) {
-      console.error('Error fetching orders:', error);
+        console.error('Error fetching orders:', error);
     }
-  };
+};
+
+
 
 
   //  const handleFulfillmentCheck = (orderId) => {

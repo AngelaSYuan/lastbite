@@ -5,6 +5,7 @@ import styles from "../styles/Home.module.css";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import firebase from '../firebase'; // Import your Firebase configuration
 import { useRouter } from 'next/router';
+
 import axios from "axios"
 
 const inter = Inter({ subsets: ["latin"] });
@@ -139,7 +140,7 @@ export default function Home() {
         <div className={styles.description}>
           <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper 🔥 </h1>
           <h3 className={styles.minor}>How it works: select a restaurant, choose mystery package, pay, pick up! </h3>
-          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! Don't worry, you can indicate dietary restrictions later. </h3>
+          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! Don&apos;t worry, you can indicate dietary restrictions later. </h3>
           <br/>
           <h1 className={styles.restLabel}>Supported Restaurants</h1>
           <br />
