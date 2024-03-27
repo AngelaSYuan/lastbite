@@ -46,7 +46,7 @@ export default function Restaurant() {
   return (
     <>
       <h1 className={styles.loginHook}>Log in to your restaurant&apos;s dashboard!</h1>
-      <h2 className={styles.subheading}>Note: if you&apos;ve previously logged in, please type the name in the exact same way (capitalization, spacing , etc.)</h2>
+      <h2 className={styles.subheading}>Note: if you&apos;ve previously logged in, please type the name in the exact same way (capitalization, spacing, etc.)</h2>
       <div className={styles.loginForm}>
         <input
           type="text"

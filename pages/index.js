@@ -85,14 +85,14 @@ export default function Home() {
     sessionStorage.setItem('packageType', 'Regular'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle regular package click action STRIPE
-    router.push(`https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM`);
+    router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);
   };
 
   const handleLargePackageClick = () => {
     sessionStorage.setItem('packageType', 'Large'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle large package click action STRIPE
-    router.push(`https://buy.stripe.com/test_8wM8wCgtz6gE06s001`);
+    router.push(`https://buy.stripe.com/eVa5of72jf7t8uI6or`);
   };
   // const handlePackageClick = async (packageType) => {
   //   try {
@@ -140,7 +140,12 @@ export default function Home() {
         <div className={styles.description}>
           <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper 🔥 </h1>
           <h3 className={styles.minor}>How it works: select a restaurant, choose mystery package, pay, pick up! </h3>
-          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! Don&apos;t worry, you can indicate dietary restrictions later. </h3>
+          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! Don&apos;t worry, you can indicate dietary restrictions later. 
+          <br />
+          <br />
+          Regular packages: $3.99. Large packages: $5.99 
+          </h3>
+
           <br/>
           <h1 className={styles.restLabel}>Supported Restaurants</h1>
           <br />
@@ -170,6 +175,8 @@ export default function Home() {
               ) : (
                 <p>This restaurant hasn&apos;t listed any packages yet!</p>
               )}
+              
+
               <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
             </div>
           </div>

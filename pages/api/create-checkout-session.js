@@ -19,8 +19,8 @@ export default async function handler(req, res) {
           },
         ],
         mode: 'payment',
-        success_url: `http://localhost:3000/`,
-        cancel_url: `http://localhost:3000/`,
+        success_url: `https://lastbite.vercel.app/`,
+        cancel_url: `https://lastbite.vercel.app//`,
       });
 
       res.status(200).json({ id: session.id });

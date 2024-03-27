@@ -58,37 +58,86 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
     }
   };
 
+  
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   const db = getFirestore();
+    
+  //   try {
+  //     const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+  //     const restaurantDocSnapshot = await getDoc(restaurantDocRef);
+  //     let foodSubmissions = [];
+  
+  //     if (restaurantDocSnapshot.exists()) {
+  //       const restaurantData = restaurantDocSnapshot.data();
+  //       foodSubmissions = restaurantData.foodSubmissions || [];
+        
+  //       const existingSubmissionIndex = foodSubmissions.findIndex(submission => submission.foodName === foodName);
+        
+  //       if (existingSubmissionIndex !== -1) {
+  //         foodSubmissions[existingSubmissionIndex].quantity += Number(quantity);
+  //         foodSubmissions[existingSubmissionIndex].price = Number(price); // Update the price
+  //       } else {
+  //         foodSubmissions.push({ foodName, quantity, price });
+  //       }
+  
+  //       await setDoc(restaurantDocRef, { foodSubmissions }, { merge: true });
+  
+  //       setFoodSubmissions(foodSubmissions);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error submitting food entry:', error);
+  //     setError(error.message);
+  //   }
+  // };
   const handleSubmit = async (event) => {
     event.preventDefault();
     const db = getFirestore();
     
     try {
-      const restaurantDocRef = doc(db, 'restaurants', restaurantName);
-      const restaurantDocSnapshot = await getDoc(restaurantDocRef);
-      let foodSubmissions = [];
+        const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+        const restaurantDocSnapshot = await getDoc(restaurantDocRef);
+        let foodSubmissions = [];
   
-      if (restaurantDocSnapshot.exists()) {
-        const restaurantData = restaurantDocSnapshot.data();
-        foodSubmissions = restaurantData.foodSubmissions || [];
+        if (restaurantDocSnapshot.exists()) {
+            const restaurantData = restaurantDocSnapshot.data();
+            foodSubmissions = restaurantData.foodSubmissions || [];
         
-        const existingSubmissionIndex = foodSubmissions.findIndex(submission => submission.foodName === foodName);
+            const existingSubmissionIndex = foodSubmissions.findIndex(submission => submission.foodName === foodName);
         
-        if (existingSubmissionIndex !== -1) {
-          foodSubmissions[existingSubmissionIndex].quantity += Number(quantity);
-          foodSubmissions[existingSubmissionIndex].price = Number(price); // Update the price
-        } else {
-          foodSubmissions.push({ foodName, quantity, price });
+            if (existingSubmissionIndex !== -1) {
+                foodSubmissions[existingSubmissionIndex].quantity += Number(quantity);
+                foodSubmissions[existingSubmissionIndex].price = Number(price); // Update the price
+            } else {
+                foodSubmissions.push({ foodName, quantity, price });
+            }
+  
+            await setDoc(restaurantDocRef, { foodSubmissions }, { merge: true });
+  
+            setFoodSubmissions(foodSubmissions);
         }
-  
-        await setDoc(restaurantDocRef, { foodSubmissions }, { merge: true });
-  
-        setFoodSubmissions(foodSubmissions);
-      }
     } catch (error) {
-      console.error('Error submitting food entry:', error);
-      setError(error.message);
+        console.error('Error submitting food entry:', error);
+        setError(error.message);
     }
-  };
+};
+
+const handleSubmissionQuantity = async (foodName, change) => {
+  const db = getFirestore();
+  try {
+    const restaurantDocRef = doc(db, 'restaurants', restaurantName);
+    const updatedFood = foodSubmissions.map(food =>
+      food.foodName === foodName
+        ? { ...food, quantity: Math.max(0, food.quantity + change) }
+        : food
+    );
+    await setDoc(restaurantDocRef, { foodSubmissions: updatedFood }, { merge: true });
+    setFoodSubmissions(updatedFood);
+  } catch (error) {
+    console.error('Error updating food quantity:', error);
+  }
+};
+
 
   const handleClearEntries = async () => {
     try {
@@ -229,8 +278,8 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
           </h1>
 
           {/* Form for submitting mystery package info */}
-          <h2 className={styles.subheading}>Add a new mystery package type</h2>
-          <h4 className={styles.addFoodDesc}>We currently support regular and large mystery packages.</h4>
+          <h2 className={styles.subheading}>Manage package</h2>
+          <h3 className={styles.addFoodDesc}>We currently support regular and large mystery packages.</h3>
           <form onSubmit={handleSubmitPackage}>
             <input
               type="text"
@@ -291,23 +340,47 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
             />
-            <input
+            {/* <input
               type="number"
               placeholder="Enter price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-            />
+            /> */}
             <button type="submit">Submit</button>
           </form>
 
           <br />
-          <br />
-          <br />
+      
           
           {error && <p>{error}</p>}
+
+
+          <div>
+            <h2>Food postings you made:</h2>
+            <ul>
+            {foodSubmissions.map((submission, index) => (
+                <li key={index}>
+                  {submission.foodName}:
+                    <button onClick={() => handleSubmissionQuantity(submission.foodName, -1)}> - </button>
+                    {submission.quantity}
+                    <button onClick={() => handleSubmissionQuantity(submission.foodName, 1)}> + </button>
+                </li>
+              ))}
+
+            </ul>
+            {/* <ul>
+              {foodSubmissions.map((submission, index) => (
+                <li key={index}>{submission.foodName}: {submission.quantity}</li>
+              ))}
+            </ul> */}
+            <button onClick={handleClearEntries}>Clear All Entries</button>
+          </div>
+
+          <br />
+          <br />
     
           <div className={styles.ordersContainer}>
-              <h2 className={styles.ordersSubheading}>Your Recent Orders</h2>
+              <h2 className={styles.ordersSubheading}>Recent Orders</h2>
               <div className={styles.tableContainer}>
                 <table className={styles.orderTable}>
                   <thead>
@@ -341,8 +414,6 @@ export default function LoggedIn({ initialFoodSubmissions, initialPackages, init
                 </table>
               </div>
             </div>
-
-
 
 
         </div>
