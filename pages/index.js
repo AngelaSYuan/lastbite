@@ -85,16 +85,16 @@ export default function Home() {
     sessionStorage.setItem('packageType', 'Regular'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle regular package click action STRIPE
-    router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
-    //THIS IS THE CORRECT LINK: router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);
+    //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
+    router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);//THIS IS THE CORRECT LINK:
   };
 
   const handleLargePackageClick = () => {
     sessionStorage.setItem('packageType', 'Large'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle large package click action STRIPE
-    router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
-    //THIS IS THE CORRECT LINK: router.push(`https://buy.stripe.com/eVa5of72jf7t8uI6or`);
+    //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
+    router.push(`https://buy.stripe.com/eVa5of72jf7t8uI6or`); //THIS IS THE CORRECT LINK: 
   };
   // const handlePackageClick = async (packageType) => {
   //   try {
