@@ -281,7 +281,7 @@ const handleSubmissionQuantity = async (foodName, change) => {
           <h2 className={styles.subheading}>Manage package</h2>
           <h3 className={styles.addFoodDesc}>We currently support regular and large mystery packages.
           <br/>
-          Please type in exactly "Regular" and "Large" as the package type.
+          Please type in exactly &quot;Regular&quot; and &quot;Large&quot; as the package type.
           </h3>
           <form onSubmit={handleSubmitPackage}>
             <input
