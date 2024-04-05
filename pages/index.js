@@ -145,7 +145,7 @@ export default function Home() {
   // };
 
   const redirectToStripe = (packageType) => {
-      const stripeLink = packageType === 'Regular' ? 'https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM' : 'https://buy.stripe.com/eVa5of72jf7t8uI6or';
+      const stripeLink = packageType === 'Regular' ? 'https://buy.stripe.com/bIY17Z86n8J5fXa3ci' : 'https://buy.stripe.com/4gw6sj1HZgbxaCQ149';
       sessionStorage.setItem('packageType', packageType);
       sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
       router.push(stripeLink);
@@ -177,7 +177,7 @@ export default function Home() {
           <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant. 
           <br />
           <br />
-          Regular packages: $3.99. Large packages: $5.99 
+          Regular packages: $5.99. Large packages: $7.99 
           </h3>
 
           <br/>
