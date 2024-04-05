@@ -22,6 +22,10 @@ export default function Home() {
 
   const [prices, setPrices] = useState([]);
 
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [selectedPackageType, setSelectedPackageType] = useState("");
+
+
   // useEffect(() => {
   //   fetchPrices()
   // },[])
@@ -63,40 +67,52 @@ export default function Home() {
 
   const handleRestaurantClick = async (restaurant) => {
     setSelectedRestaurant(restaurant);
+    let regularPackageQuantity = 0;
+    let largePackageQuantity = 0;
+  
     if (restaurant.packages) {
-      const regularPackage = restaurant.packages.find(pkg => pkg.packageType === 'regular' || 'Regular');
-      const largePackage = restaurant.packages.find(pkg => pkg.packageType === 'large' || 'Large');
+      const regularPackage = restaurant.packages.find(pkg => pkg.packageType.toLowerCase() === 'regular');
+      const largePackage = restaurant.packages.find(pkg => pkg.packageType.toLowerCase() === 'large');
+  
       if (regularPackage) {
-        setQuantityRegular(regularPackage.packageQuantity);
-      } else {
-        setQuantityRegular(0);
+        regularPackageQuantity = regularPackage.packageQuantity;
       }
+  
       if (largePackage) {
-        setQuantityLarge(largePackage.packageQuantity);
-      } else {
-        setQuantityLarge(0);
+        largePackageQuantity = largePackage.packageQuantity;
       }
-    } else {
-      setQuantityRegular(0);
-      setQuantityLarge(0);
     }
+  
+    setQuantityRegular(regularPackageQuantity);
+    setQuantityLarge(largePackageQuantity);
   };
+  
   const handleRegularPackageClick = () => {
-    sessionStorage.setItem('packageType', 'Regular'); //NOTE: THE FIRST LETTER IS CAPITALIZED
-    sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
-    // Handle regular package click action STRIPE
-    //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`); testing $0.50 payment
-    router.push(`https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM `); //TEST MODE
-    //router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);//THIS IS THE CORRECT LINK:
+    setSelectedPackageType('Regular');
+    setShowTermsModal(true);
   };
 
   const handleLargePackageClick = () => {
-    sessionStorage.setItem('packageType', 'Large'); //NOTE: THE FIRST LETTER IS CAPITALIZED
-    sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
-    // Handle large package click action STRIPE
-    //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
-    router.push(`https://buy.stripe.com/eVa5of72jf7t8uI6or`); //THIS IS THE CORRECT LINK: 
+    setSelectedPackageType('Large');
+    setShowTermsModal(true);
   };
+
+  // const handleRegularPackageClick = () => {
+  //   sessionStorage.setItem('packageType', 'Regular'); //NOTE: THE FIRST LETTER IS CAPITALIZED
+  //   sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
+  //   // Handle regular package click action STRIPE
+  //   //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`); testing $0.50 payment
+  //   router.push(`https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM `); //TEST MODE
+  //   //router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);//THIS IS THE CORRECT LINK:
+  // };
+
+  // const handleLargePackageClick = () => {
+  //   sessionStorage.setItem('packageType', 'Large'); //NOTE: THE FIRST LETTER IS CAPITALIZED
+  //   sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
+  //   // Handle large package click action STRIPE
+  //   //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
+  //   router.push(`https://buy.stripe.com/eVa5of72jf7t8uI6or`); //THIS IS THE CORRECT LINK: 
+  // };
   // const handlePackageClick = async (packageType) => {
   //   try {
   //     const response = await fetch('/api/create-checkout-session', {
@@ -128,7 +144,22 @@ export default function Home() {
   //   router.push(`/checkout${queryString}`);
   // };
 
+  const redirectToStripe = (packageType) => {
+      const stripeLink = packageType === 'Regular' ? 'https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM' : 'https://buy.stripe.com/eVa5of72jf7t8uI6or';
+      sessionStorage.setItem('packageType', packageType);
+      sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
+      router.push(stripeLink);
+  };
+  
+  const handleAgreeToTerms = () => {
+    setShowTermsModal(false);
+    redirectToStripe(selectedPackageType);
+  };
 
+  const getPackageQuantity = (packages, type) => {
+    const packageInfo = packages.find(pkg => pkg.packageType.toLowerCase() === type);
+    return packageInfo ? packageInfo.packageQuantity : 0;
+  };
   
 
   return (
@@ -143,7 +174,7 @@ export default function Home() {
         <div className={styles.description}>
           <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper 🔥 </h1>
           <h3 className={styles.minor}>How it works: select a restaurant, choose mystery package, pay, pick up! </h3>
-          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! <br/>Don&apos;t worry, you can view potential food items you could receive, and you can indicate dietary restrictions later. 
+          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant. 
           <br />
           <br />
           Regular packages: $3.99. Large packages: $5.99 
@@ -153,13 +184,31 @@ export default function Home() {
           <h1 className={styles.restLabel}>Supported Restaurants</h1>
           <br />
           <div className={styles.restaurantGrid}>
-            {restaurants.map((restaurant, index) => (
-              <div key={index} className={styles.restaurantCard} onClick={() => handleRestaurantClick(restaurant)}>
-                <h2>{restaurant.name}</h2>
-                {/* Add more details as needed */}
-              </div>
-            ))}
-          </div>
+              {restaurants.map((restaurant, index) => (
+                <div key={index} className={styles.restaurantCard} onClick={() => handleRestaurantClick(restaurant)}>
+                  
+                  <div className={styles.restaurantInfo}>
+                    
+                    <h1 className={styles.restaurantName}>{restaurant.name}</h1>
+                    {/* Display quantity of regular and large packages if available */}
+                    <br/>
+                    <div className={styles.quantitiesOnCard}>
+                      {restaurant.packages && restaurant.packages.length > 0 ? (
+                        <div>
+                          <p>{`Regular Packages Left: ${getPackageQuantity(restaurant.packages, 'regular')}`}</p>
+                          <p>{`Large Packages Left: ${getPackageQuantity(restaurant.packages, 'large')}`}</p>
+                        </div>
+                      ) : (
+                        <p>No packages listed</p>
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              ))}
+           </div>
+
+
         </div>
         {selectedRestaurant && (
         <div className={styles.modalOverlay}>
@@ -195,6 +244,21 @@ export default function Home() {
         </div>
          )}
 
+        {showTermsModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <div className={styles.modalHeader}>
+                <h2>Terms and Conditions</h2>
+              </div>
+              <p>Please read and agree to the terms and conditions before proceeding to payment.</p>
+              <p>By clicking "Agree", you acknowledge that you have read and agreed to the terms and conditions outlined above.</p>
+              <button onClick={handleAgreeToTerms}>Agree</button>
+              <button onClick={() => setShowTermsModal(false)} className={styles.closeButton}> Close </button>
+            </div>
+          </div>
+        )}
+
+
 
 
         {/* {selectedItem && (
@@ -215,3 +279,5 @@ export default function Home() {
     </>
   );
 }
+
+//note for timeout for race condition: leave note in terms and condition saying we will ony keep the checkout open for 2 minutes.

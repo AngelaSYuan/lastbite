@@ -117,7 +117,7 @@ export default function InProgress() {
         </label>
         <br />
         <label>
-          Dietary Restrictions/Notes: {/* New input field for dietary restrictions */}
+          Any notes (ie. what items you love, etc), but no guarantees!: {/* New input field for dietary restrictions */}
           <input type="text" value={dietaryRestrictions} onChange={(e) => setDietaryRestrictions(e.target.value)} />
         </label>
         <br />

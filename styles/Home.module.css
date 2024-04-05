@@ -41,10 +41,11 @@
 
 
 .restaurantGrid {
+  flex-direction: row;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between; /* Distribute items evenly along the main axis */
+  gap: 20%;
+  justify-content: center; /* Distribute items evenly along the main axis space-bewteen for far */
 }
 
 .restaurantCard {
@@ -102,6 +103,14 @@
   overflow-y: auto;
 }
 
+.restaurantInfo {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+/* .quantitiesOnCard {
+  margin: 5px;
+} */
 
 
 
