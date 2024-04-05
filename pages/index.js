@@ -213,9 +213,11 @@ export default function Home() {
         {selectedRestaurant && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <h2>{selectedRestaurant.name}</h2>
+            <h2  className={styles.restaurantName}>{selectedRestaurant.name}</h2>
+            <br/>
             {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
               <div>
+                <div className={styles.buttonDiv}>
                 {quantityRegular > 0 ? (
                   <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)</button>
                 ) : (
@@ -226,19 +228,23 @@ export default function Home() {
                 ) : (
                   <p>No large packages available</p>
                 )}
-                <div>
-                  <h3>Potential items you could receive:</h3>
-                  <ul>
-                    {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.map((food, index) => (
-                      <li key={index}>{food.foodName} ({food.quantity} left)</li>
-                    ))}
-                  </ul>
                 </div>
+
+               {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 && (
+                  <div>
+                    <h3>Potential items you could receive:</h3>
+                    <ul>
+                      {selectedRestaurant.foodSubmissions.map((food, index) => (
+                        <li key={index}>{food.foodName} ({food.quantity} left)</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <p>This restaurant has not listed any packages yet!</p>
             )}
-
+            <br/>
             <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
           </div>
         </div>

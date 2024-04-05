@@ -45,7 +45,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20%;
-  justify-content: center; /* Distribute items evenly along the main axis space-bewteen for far */
+  padding-bottom: 30%;
+  justify-content: left; /* Distribute items evenly along the main axis space-bewteen for far */
 }
 
 .restaurantCard {
@@ -60,6 +61,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 5%;
 }
 
 .restaurantCard h2 {
@@ -76,7 +78,17 @@
 
 
 .modalContent button {
+  padding: 10px;
+  text-align: center;
   cursor: pointer; /* Add pointer cursor to the close button */
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  bottom: -20px; /* Adjust the distance from the bottom as needed */
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Home.module.css */
@@ -112,10 +124,19 @@
   margin: 5px;
 } */
 
+.restaurantName {
+  text-align: center;
+}
 
+.buttonDiv {
+  display: flex;
+  flex-direction: row;
+}
 
-
-
+.buttonDiv button {
+  margin-bottom: 10px; /* Adjust the margin as needed */
+  margin: 10px;
+}
 
 
 
