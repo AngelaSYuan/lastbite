@@ -251,7 +251,7 @@ export default function Home() {
                 <h2>Terms and Conditions</h2>
               </div>
               <p>Please read and agree to the terms and conditions before proceeding to payment.</p>
-              <p>By clicking "Agree", you acknowledge that you have read and agreed to the terms and conditions outlined above.</p>
+              <p>By clicking &quot;Agree&quot;, you acknowledge that you have read and agreed to the terms and conditions outlined above.</p>
               <button onClick={handleAgreeToTerms}>Agree</button>
               <button onClick={() => setShowTermsModal(false)} className={styles.closeButton}> Close </button>
             </div>
