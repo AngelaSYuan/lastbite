@@ -85,8 +85,9 @@ export default function Home() {
     sessionStorage.setItem('packageType', 'Regular'); //NOTE: THE FIRST LETTER IS CAPITALIZED
     sessionStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant.name));
     // Handle regular package click action STRIPE
-    //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`);
-    router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);//THIS IS THE CORRECT LINK:
+    //router.push(`https://buy.stripe.com/7sI17ZcmD8J5fXa3cg`); testing $0.50 payment
+    router.push(`https://buy.stripe.com/test_8wM7sy3GN0Wkg5qcMM `); //TEST MODE
+    //router.push(`https://buy.stripe.com/28og2T2M3e3p12g3ce`);//THIS IS THE CORRECT LINK:
   };
 
   const handleLargePackageClick = () => {
@@ -142,7 +143,7 @@ export default function Home() {
         <div className={styles.description}>
           <h1 className={styles.mainHook}> LastBite: Your favorite food, but cheaper 🔥 </h1>
           <h3 className={styles.minor}>How it works: select a restaurant, choose mystery package, pay, pick up! </h3>
-          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! Don&apos;t worry, you can indicate dietary restrictions later. 
+          <h3 className={styles.blurb}>A mystery package includes a few handpicked items from a restaurant! <br/>Don&apos;t worry, you can view potential food items you could receive, and you can indicate dietary restrictions later. 
           <br />
           <br />
           Regular packages: $3.99. Large packages: $5.99 
@@ -166,19 +167,27 @@ export default function Home() {
             <h2>{selectedRestaurant.name}</h2>
             {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
               <div>
-                <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)</button>
-                <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)</button>
+                {quantityRegular > 0 ? (
+                  <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)</button>
+                ) : (
+                  <p>No regular packages available</p>
+                )}
+                {quantityLarge > 0 ? (
+                  <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)</button>
+                ) : (
+                  <p>No large packages available</p>
+                )}
                 <div>
-                  <h3>Food Items:</h3>
+                  <h3>Potential items you could receive:</h3>
                   <ul>
                     {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.map((food, index) => (
-                      <li key={index}>{food.foodName}: {food.quantity}</li>
+                      <li key={index}>{food.foodName} ({food.quantity} left)</li>
                     ))}
                   </ul>
                 </div>
               </div>
             ) : (
-              <p>This restaurant hasn't listed any packages yet!</p>
+              <p>This restaurant has not listed any packages yet!</p>
             )}
 
             <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
