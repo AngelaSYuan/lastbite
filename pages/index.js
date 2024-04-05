@@ -229,17 +229,18 @@ export default function Home() {
                   <p>No large packages available</p>
                 )}
                 </div>
-
-               {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 && (
-                  <div>
-                    <h3>Potential items you could receive:</h3>
-                    <ul>
-                      {selectedRestaurant.foodSubmissions.map((food, index) => (
-                        <li key={index}>{food.foodName} ({food.quantity} left)</li>
-                      ))}
-                    </ul>
-                  </div>
+                
+                <h3>Potential items you could receive:</h3>
+                {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.length > 0 ? (
+                  <ul>
+                    {selectedRestaurant.foodSubmissions.map((food, index) => (
+                      <li key={index}>{food.foodName} ({food.quantity} left)</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Has not been specified yet</p>
                 )}
+
               </div>
             ) : (
               <p>This restaurant has not listed any packages yet!</p>
