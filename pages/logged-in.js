@@ -128,7 +128,7 @@ const handleSubmissionQuantity = async (foodName, change) => {
     const restaurantDocRef = doc(db, 'restaurants', restaurantName);
     const updatedFood = foodSubmissions.map(food =>
       food.foodName === foodName
-        ? { ...food, quantity: Math.max(0, food.quantity + change) }
+        ? { ...food, quantity: Math.max(0, parseInt(food.quantity) + change) }
         : food
     );
     await setDoc(restaurantDocRef, { foodSubmissions: updatedFood }, { merge: true });
@@ -137,6 +137,7 @@ const handleSubmissionQuantity = async (foodName, change) => {
     console.error('Error updating food quantity:', error);
   }
 };
+
 
 
   const handleClearEntries = async () => {
@@ -212,7 +213,7 @@ const handleSubmissionQuantity = async (foodName, change) => {
       const restaurantDocRef = doc(db, 'restaurants', restaurantName);
       const updatedPackages = packages.map(pkg =>
         pkg.packageType === packageType
-          ? { ...pkg, packageQuantity: Math.max(0, pkg.packageQuantity + change) }
+          ? { ...pkg, packageQuantity: Math.max(0, parseInt(pkg.packageQuantity) + change) }
           : pkg
       );
       await setDoc(restaurantDocRef, { packages: updatedPackages }, { merge: true });

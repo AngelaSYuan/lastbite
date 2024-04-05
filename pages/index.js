@@ -161,28 +161,31 @@ export default function Home() {
           </div>
         </div>
         {selectedRestaurant && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-              <h2>{selectedRestaurant.name}</h2>
-              {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h2>{selectedRestaurant.name}</h2>
+            {selectedRestaurant.packages && selectedRestaurant.packages.length > 0 ? (
+              <div>
+                <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)</button>
+                <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)</button>
                 <div>
-                 <button onClick={handleRegularPackageClick}>Regular Package ({quantityRegular} left)
-                 {/* <br/>
-                 selectedRestaurant.packages */}
-                 </button>
-                 <button onClick={handleLargePackageClick}>Large Package ({quantityLarge} left)
-                 </button>
-                 {/* <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button> */}
-                 </div>
-              ) : (
-                <p>This restaurant hasn&apos;t listed any packages yet!</p>
-              )}
-              
+                  <h3>Food Items:</h3>
+                  <ul>
+                    {selectedRestaurant.foodSubmissions && selectedRestaurant.foodSubmissions.map((food, index) => (
+                      <li key={index}>{food.foodName}: {food.quantity}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <p>This restaurant hasn't listed any packages yet!</p>
+            )}
 
-              <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
-            </div>
+            <button onClick={() => setSelectedRestaurant(null)} className={styles.closeButton}>Close</button>
           </div>
-        )}
+        </div>
+         )}
+
 
 
         {/* {selectedItem && (
