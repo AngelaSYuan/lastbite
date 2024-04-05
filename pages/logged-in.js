@@ -296,12 +296,12 @@ const handleSubmissionQuantity = async (foodName, change) => {
               value={packageQuantity}
               onChange={(e) => setPackageQuantity(e.target.value)}
             />
-            <input
+            {/* <input
               type="number"
               placeholder="Enter price"
               value={packagePrice}
               onChange={(e) => setPackagePrice(e.target.value)}
-            />
+            /> */}
             <button type="submit">Submit Package</button>
           </form>
 
@@ -311,7 +311,8 @@ const handleSubmissionQuantity = async (foodName, change) => {
             <ul>
             {packages.map((thePackage, index) => (
                 <li key={index}>
-                  {thePackage.packageType} package (${thePackage.packagePrice}):
+                  {/* (${thePackage.packagePrice}) */}
+                  {thePackage.packageType} package:
                     <button onClick={() => handleUpdateQuantity(thePackage.packageType, -1)}> - </button>
                     {thePackage.packageQuantity}
                     <button onClick={() => handleUpdateQuantity(thePackage.packageType, 1)}> + </button>
