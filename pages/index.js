@@ -257,7 +257,8 @@ export default function Home() {
               <div className={styles.modalHeader}>
                 <h2>Terms and Conditions</h2>
               </div>
-              <p>Please read and agree to the terms and conditions before proceeding to payment.</p>
+              <p>Please read and agree before proceeding to payment:</p>
+              <p>We cannot guarantee any accomodations to dietary restrictions/allergies. If your order is not picked up before the restaurant closes, your order will be discarded. </p>
               <p>By clicking &quot;Agree&quot;, you acknowledge that you have read and agreed to the terms and conditions outlined above.</p>
               <button onClick={handleAgreeToTerms}>Agree</button>
               <button onClick={() => setShowTermsModal(false)} className={styles.closeButton}> Close </button>
